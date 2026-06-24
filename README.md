@@ -18,8 +18,11 @@ The comparison shows that System A enables undetectable data manipulation, while
 ├── requirements.txt     # System A dependencies
 ├── postman/
 │   └── RM-Blockchain.postman_collection.json   # System A — importable Postman tests
-├── contracts/
-│   └── TransparencyRegistry.sol                # SYSTEM B — Solidity smart contract
+├── contracts/                          # SYSTEM B — Remix workspace
+│   ├── DanaBantuan.sol                  #   the Solidity smart contract
+│   ├── artifacts/                       #   compiled output (ABI + metadata) from Remix
+│   ├── remix.config.json                #   Remix workspace config
+│   └── .prettierrc.json                 #   formatting config
 └── docs/                # Academic deliverables (final paper, Turnitin report, proofs)
     ├── Question1_FinalPaper/
     ├── Question2_FinalPaper/
@@ -91,7 +94,7 @@ After running `PUT /manipulate/<id>`, the record is silently overwritten — the
 
 # System B — Blockchain Smart Contract (Solidity / Ethereum Sepolia)
 
-A decentralized counterpart implemented as the [`contracts/TransparencyRegistry.sol`](contracts/TransparencyRegistry.sol) smart contract. Records are written to the blockchain and **cannot be modified or deleted** — there is intentionally no manipulate/delete function. Every write emits an event tied to a transaction hash that anyone can verify publicly.
+A decentralized counterpart implemented as the [`contracts/DanaBantuan.sol`](contracts/DanaBantuan.sol) smart contract (*Dana Bantuan* = "Aid Fund"). Only the contract's **admin** — the wallet that deployed it — can write records (enforced by an `onlyAdmin` modifier), there is intentionally **no function to delete or silently edit** stored data, and, crucially, **every write is a permanent transaction recorded on the blockchain** that anyone can verify on Etherscan. The compiled output (ABI + metadata) produced by Remix is included under [`contracts/artifacts/`](contracts/artifacts/).
 
 ### Prerequisites
 
@@ -102,23 +105,26 @@ A decentralized counterpart implemented as the [`contracts/TransparencyRegistry.
 ### 1. Deploy the contract
 
 1. Open the **[Remix IDE](https://remix.ethereum.org/)** in your browser.
-2. Create a new file and paste in the contents of [`contracts/TransparencyRegistry.sol`](contracts/TransparencyRegistry.sol).
-3. **Compile** tab → compile with a Solidity `0.8.x` compiler.
+2. Create a file `DanaBantuan.sol` and paste in the contents of [`contracts/DanaBantuan.sol`](contracts/DanaBantuan.sol).
+3. **Compile** tab → compile with a Solidity **`0.8.20`** (or newer `0.8.x`) compiler — the contract uses `pragma solidity ^0.8.20`.
 4. **Deploy & Run** tab → set *Environment* to **"Injected Provider - MetaMask"** (this connects Remix to Sepolia through your wallet).
-5. Click **Deploy** and confirm the transaction in the MetaMask popup.
+5. Click **Deploy** and confirm the transaction in the MetaMask popup. The wallet you deploy with becomes the contract **admin**.
 
 ### 2. Use the contract
 
-Once deployed, the contract appears under *Deployed Contracts* in Remix with two functions:
+Once deployed, the contract appears under *Deployed Contracts* in Remix with these functions:
 
 | Function | Purpose |
 |----------|---------|
-| `registerRecipient(address _wallet, uint256 _amount)` | Write a recipient record to the blockchain (CREATE). MetaMask prompts you to sign. |
-| `getRecipientInfo(address _wallet)` | Read back a recipient's stored details (READ). |
+| `registerRecipient(address _alamatWallet, uint _jumlahDana)` | Write a recipient record (CREATE). **Admin-only** — MetaMask prompts you to sign. Reverts for non-admins, an empty address, or a zero amount. |
+| `getRecipientInfo(address _alamatWallet)` | Read the amount stored for a wallet (READ — free, no gas). |
+| `admin()` | The wallet address that deployed the contract. |
+| `daftarPenerima(address)` | Public mapping getter — amount registered to a given wallet. |
 
-- **Register:** enter a wallet address and an amount, click `registerRecipient`, and approve in MetaMask.
-- **Read:** paste the same address into `getRecipientInfo` to retrieve the stored record.
-- **Try to tamper:** call `registerRecipient` **again with the same address** — the transaction **reverts** ("Record already exists and cannot be modified"), proving the data is immutable.
+- **Register (admin only):** as the deploying wallet, enter a recipient address and an amount, click `registerRecipient`, and approve in MetaMask.
+- **Read:** paste the address into `getRecipientInfo` (or `daftarPenerima`) to retrieve the stored amount — anyone can do this for free.
+- **Try to tamper as an outsider:** connect a *different* wallet and call `registerRecipient` — it **reverts** with *"Hanya admin yang bisa menjalankan fungsi ini"*, so unauthorized users cannot inject or change records.
+- **No silent edits:** there is no delete function, and every `registerRecipient` call is its own transaction permanently recorded on-chain — so even an authorized update is publicly visible on Etherscan, unlike System A's untraceable `PUT`.
 
 ### 3. Verify on Etherscan
 
@@ -126,19 +132,20 @@ Copy any transaction hash from MetaMask or Remix and paste it into **[sepolia.et
 
 ### What it demonstrates
 
-Unlike System A, no record can be altered or removed after it is written. Every action requires a cryptographic signature (MetaMask) and is logged on-chain forever, providing immutability, traceability, and public verifiability — the properties needed to deter corruption.
+Unlike System A, records can only be written by the authorized admin, there is no delete or silent-edit function, and every action is cryptographically signed (MetaMask) and logged on-chain forever. Any change is therefore traceable and publicly verifiable — providing the immutability, transparency, and accountability needed to deter corruption.
 
 ---
 
 ## System A vs System B
 
-| Criterion          | System A (Centralized)              | System B (Blockchain)             |
-|--------------------|-------------------------------------|-----------------------------------|
-| Data manipulation  | Possible via `PUT` endpoint         | Impossible (immutable)            |
-| Audit trail        | None — changes leave no trace       | Every tx recorded on-chain        |
-| Transparency       | Restricted, internal only           | Public, verifiable on Etherscan   |
-| Authentication     | None                                | Cryptographic signing (MetaMask)  |
-| Tech stack         | Python Flask + Postman              | Solidity + Remix + Sepolia        |
+| Criterion          | System A (Centralized)              | System B (Blockchain)                          |
+|--------------------|-------------------------------------|------------------------------------------------|
+| Data manipulation  | Possible & untraceable via `PUT`    | No delete/edit function; every change logged on-chain |
+| Audit trail        | None — changes leave no trace       | Every transaction permanently recorded on-chain |
+| Transparency       | Restricted, internal only           | Public, verifiable on Etherscan                |
+| Access control     | None — anyone with API access       | Admin-only writes (`onlyAdmin`)                |
+| Authentication     | None                                | Cryptographic signing (MetaMask)               |
+| Tech stack         | Python Flask + Postman              | Solidity + Remix + Sepolia                     |
 
 ---
 

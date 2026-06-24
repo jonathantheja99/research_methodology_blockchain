@@ -1,0 +1,120 @@
+{
+	"compiler": {
+		"version": "0.8.30+commit.73712a01"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [],
+				"name": "admin",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "daftarPenerima",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_alamatWallet",
+						"type": "address"
+					}
+				],
+				"name": "getRecipientInfo",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_alamatWallet",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_jumlahDana",
+						"type": "uint256"
+					}
+				],
+				"name": "registerRecipient",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/DanaBantuan.sol": "DanaBantuan"
+		},
+		"evmVersion": "prague",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/DanaBantuan.sol": {
+			"keccak256": "0x67863b0dd897293edb18601a4c656ad52250ba132d21927434db2b3aba803be1",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://80827c86af6fcd623fc63ec0fd9a7edb55d49983db6f1d9b7ed0cab85b32170f",
+				"dweb:/ipfs/QmSrsSYpu9NRWX4JuMW2rUZqCyDvwSmNZ1fN3v8jAoM3eF"
+			]
+		}
+	},
+	"version": 1
+}
