@@ -1,0 +1,100 @@
+{
+	"info": {
+		"_postman_id": "a14b0c0c-1234-4f56-9abc-rmblockchain01",
+		"name": "RM Blockchain Transparency API (Kelompok 14)",
+		"description": "Postman collection for the Flask API in server.py — a simulation of a blockchain-based transparency system for reducing corruption (COMP6696001 Final Project, Group 14).\n\nThe server runs locally at http://127.0.0.1:5000. Start it first with:\n\n    python server.py\n\nThen run the requests below in order: Register a recipient (CREATE), view all transactions (READ), then manipulate a record (UPDATE) to demonstrate the corruption loophole the paper discusses.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Register Recipient (CREATE)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nama\": \"Budi Santoso\",\n    \"alamat_wallet\": \"0xABC123DEF456\",\n    \"jumlah\": 1000000\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/register",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"register"
+					]
+				},
+				"description": "Registers a new aid recipient. Sends nama, alamat_wallet and jumlah as JSON. The server assigns an auto-incrementing id and returns the created record with HTTP 201."
+			},
+			"response": []
+		},
+		{
+			"name": "2. Get All Transactions (READ)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/transactions",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"transactions"
+					]
+				},
+				"description": "Returns the full list of registered recipients/transactions currently held in the in-memory database."
+			},
+			"response": []
+		},
+		{
+			"name": "3. Manipulate Record (UPDATE - corruption demo)",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"alamat_wallet_baru\": \"0xHACKER999\",\n    \"jumlah_baru\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/manipulate/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"manipulate",
+						"1"
+					]
+				},
+				"description": "Overwrites the wallet address and amount of the record with id = 1. This intentionally demonstrates how a centralized, mutable database can be tampered with — the problem a blockchain-based transparency system is designed to prevent. Change the trailing '1' in the path to target a different record id."
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:5000",
+			"type": "string"
+		}
+	]
+}
